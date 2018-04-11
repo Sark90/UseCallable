@@ -12,11 +12,7 @@ public abstract class CountSum {
     private static final int MIN_THREADS_NUM = 1;
     private static int[] arr;
     private static int maxThreadsNum;
-    private static long duration;
     private static HashMap<Integer, Long> durations = new HashMap<>(); //<threads number, duration>
-    private static ExecutorService es;
-    private static ArrayList<Future<Integer>> futures;
-    private static int sum = 0;
 
     public static void start() {
         initArray();
@@ -64,11 +60,11 @@ public abstract class CountSum {
             System.out.println("\t\t--- " + threadsNum + " thread(s) ---");
             long d = 0;
             for (int testNum=1; testNum<=TESTS_NUM; testNum++) {
-                futures = new ArrayList<>();
+                ArrayList<Future<Integer>> futures = new ArrayList<>();
                 System.out.println("\t--- Test #" + testNum + " ---");
                 Timer timer = new Timer();
                 timer.start();
-                es = Executors.newFixedThreadPool(threadsNum);
+                ExecutorService es = Executors.newFixedThreadPool(threadsNum);
                 int part = arr.length/threadsNum + arr.length%threadsNum; //for 1st thread
                 int start = 0; //for 1st thread
                 for (int i=1; i<=threadsNum; i++) {
@@ -76,7 +72,7 @@ public abstract class CountSum {
                     start += part; //for other threads
                     part = arr.length/threadsNum; //for other threads
                 }
-                sum = 0;
+                int sum = 0;
                 try {
                     for (Future<Integer> f: futures) {
                         sum += f.get();
@@ -86,7 +82,7 @@ public abstract class CountSum {
                 }
                 es.shutdown();
                 timer.stop();
-                duration = timer.getTime();
+                long duration = timer.getTime();
                 timer.reset();
                 d += duration;
                 System.out.println("Sum = " + sum);
