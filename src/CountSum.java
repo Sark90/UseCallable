@@ -85,7 +85,6 @@ public abstract class CountSum {
                 es.shutdown();
                 timer.stop();
                 long duration = timer.getTime();
-                timer.reset();
                 d += duration;
                 System.out.println("Sum = " + sum);
                 System.out.println("Duration: " + duration);
