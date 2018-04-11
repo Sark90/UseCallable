@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,8 +7,9 @@ import java.util.concurrent.Future;
 public abstract class CountSum {
     private static final int TESTS_NUM = 3;
     private static final int MIN_THREADS_NUM = 1;
+    private static final int MAX_THREADS_NUM = 30;
+    private static final int MAX_ARR_SIZE = 10000000;
     private static int[] arr;
-    private static int maxThreadsNum;
     private static HashMap<Integer, Long> durations = new HashMap<>(); //<threads number, duration>
 
     public static void start() {
@@ -32,7 +30,7 @@ public abstract class CountSum {
     private static void getOptimalThreadsNum() {
         int optimalNum = 1;
         long minTime = durations.get(optimalNum++);
-        for(int i=optimalNum; i<=maxThreadsNum; i++) {
+        for(int i = optimalNum; i <= MAX_THREADS_NUM; i++) {
             if (minTime > durations.get(i)) {
                 minTime = durations.get(i);
                 optimalNum = i;
@@ -43,10 +41,14 @@ public abstract class CountSum {
 
     private static void initArray() {
         System.out.print("Type the size of array: ");
-        int size = new Scanner(System.in).nextInt();
-        if (size<=1 || size>500000) size = 1000;
+        int size;
+        try {
+            size = new Scanner(System.in).nextInt();
+        } catch (InputMismatchException e) {
+            size = MAX_ARR_SIZE;
+        }
+        if (size<=1 || size>MAX_ARR_SIZE) size = MAX_ARR_SIZE;
         arr = new int[size];
-        maxThreadsNum = size;
         Random r = new Random();
         for (int i=0; i<arr.length; i++) {
             arr[i] = r.nextInt(1000);
@@ -56,7 +58,7 @@ public abstract class CountSum {
     }
 
     private static void count() {
-        for (int threadsNum=MIN_THREADS_NUM; threadsNum<=maxThreadsNum; threadsNum++) {
+        for (int threadsNum = MIN_THREADS_NUM; threadsNum <= MAX_THREADS_NUM; threadsNum++) {
             System.out.println("\t\t--- " + threadsNum + " thread(s) ---");
             long d = 0;
             for (int testNum=1; testNum<=TESTS_NUM; testNum++) {
